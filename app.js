@@ -15,7 +15,7 @@ app.post('/migration', (req, res) => {
       workItemId: 'mock-work-item-id',
       totalGroups: 10,
       migratedGroups: 0,
-      totalUsers: 1,
+      totalUsers: 10,
       migratedUsers: 0,
       roleId: 'mock-role-id',
       newRoleName: 'new-role',
@@ -40,7 +40,7 @@ app.get('/migration/:id', (req, res) => {
       workItemId: 'mock-work-item-id',
       totalGroups: 10,
       migratedGroups: 0,
-      totalUsers: 1,
+      totalUsers: 10,
       migratedUsers: 0,
       roleId: 'mock-role-id',
       newRoleName: 'new-role',
@@ -51,15 +51,16 @@ app.get('/migration/:id', (req, res) => {
     }
   };
 
-  if (refresh === 1) {
+  if (refresh >10) {
+    mockMigration.data[0].migratedGroups = 10;
+    mockMigration.data[0].migratedUsers = 10;
+    mockMigration.status = 'completed';
+  } else if (refresh > 1) {
     mockMigration.data[0].migratedGroups = refresh;
     mockMigration.data[0].migratedUsers = refresh;
-  } else if (refresh > 1) {
     mockMigration.status = 'processing';
-    if (refresh > 10) {
-      mockMigration.status = 'complete';
-    }
   }
+
 
   res.json(mockMigration);
 });
