@@ -2,60 +2,66 @@ const express = require("express");
 const app = express();
 const port = process.env.PORT || 3001;
 
-app.get("/", (req, res) => res.type('html').send(html));
+app.use(express.json());
+const migrationId = 'mock-migration-id';
+const hostname = "https://hello-example-on33.onrender.com/"
+app.post('/migration', (req, res) => {
+  const mockMigration = {
+    id: 'mock-mongo-id',
+    status: 'pending',
+    tenantId: 'abc',
+    type: 'MigrateBatch1',
+    data: [{
+      workItemId: 'mock-work-item-id',
+      totalGroups: 10,
+      migratedGroups: 0,
+      totalUsers: 1,
+      migratedUsers: 0,
+      roleId: 'mock-role-id',
+      newRoleName: 'new-role',
+      createNewRole: false
+    }],
+    links: {
+      self: `${hostname}/migration/mock-mongo-id`,
+    }
+  };
+  res.status(201).json(mockMigration);
+});
+
+
+app.get('/migration/:id', (req, res) => {
+  const refresh = parseInt(req.query.refresh, 10);
+  const mockMigration = {
+    id: req.params.id,
+    status: 'pending',
+    tenantId: 'abc',
+    type: 'MigrateBatch1',
+    data: [{
+      workItemId: 'mock-work-item-id',
+      totalGroups: 10,
+      migratedGroups: 0,
+      totalUsers: 1,
+      migratedUsers: 0,
+      roleId: 'mock-role-id',
+      newRoleName: 'new-role',
+      createNewRole: false
+    }]
+  };
+
+  if (refresh === 1) {
+    mockMigration.data[0].migratedGroups = refresh;
+    mockMigration.data[0].migratedUsers = refresh;
+  } else if (refresh > 1) {
+    mockMigration.status = 'processing';
+    if (refresh > 10) {
+      mockMigration.status = 'complete';
+    }
+  }
+
+  res.json(mockMigration);
+});
 
 const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
 server.keepAliveTimeout = 120 * 1000;
 server.headersTimeout = 120 * 1000;
-
-const html = `
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Hello from Render!</title>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <script>
-      setTimeout(() => {
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
-          disableForReducedMotion: true
-        });
-      }, 500);
-    </script>
-    <style>
-      @import url("https://p.typekit.net/p.css?s=1&k=vnd5zic&ht=tk&f=39475.39476.39477.39478.39479.39480.39481.39482&a=18673890&app=typekit&e=css");
-      @font-face {
-        font-family: "neo-sans";
-        src: url("https://use.typekit.net/af/00ac0a/00000000000000003b9b2033/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3") format("woff2"), url("https://use.typekit.net/af/00ac0a/00000000000000003b9b2033/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3") format("woff"), url("https://use.typekit.net/af/00ac0a/00000000000000003b9b2033/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3") format("opentype");
-        font-style: normal;
-        font-weight: 700;
-      }
-      html {
-        font-family: neo-sans;
-        font-weight: 700;
-        font-size: calc(62rem / 16);
-      }
-      body {
-        background: white;
-      }
-      section {
-        border-radius: 1em;
-        padding: 1em;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        margin-right: -50%;
-        transform: translate(-50%, -50%);
-      }
-    </style>
-  </head>
-  <body>
-    <section>
-      Hello from Render!
-    </section>
-  </body>
-</html>
-`
