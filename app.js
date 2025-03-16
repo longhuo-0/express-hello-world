@@ -45,7 +45,10 @@ app.get('/migration/:id', (req, res) => {
       roleId: 'mock-role-id',
       newRoleName: 'new-role',
       createNewRole: false
-    }]
+    }],
+    links: {
+      self: `${hostname}/migration/mock-mongo-id`,
+    }
   };
 
   if (refresh === 1) {
